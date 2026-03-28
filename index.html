@@ -7,11 +7,19 @@
 <style>
 :root{--bg:#1a1a1a;--surface:#222;--border:#2e2e2e;--bl:#383838;--text:#f0f0f0;--muted:#555;--muted2:#888}
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;font-weight:400;min-height:100vh}
+body{background:var(--bg);color:var(--text);font-family:Helvetica,Arial,sans-serif;min-height:100vh}
 .container{max-width:820px;margin:0 auto;padding:40px 28px 60px}
-header{margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px}
-.brand{font-size:18px;color:#fff;letter-spacing:.04em}
+header{margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{font-size:18px;color:#fff;letter-spacing:.04em;white-space:nowrap}
 .brand em{font-style:normal;color:#fff}
+.tabs{display:flex;border:1px solid var(--bl);border-radius:3px;overflow:hidden;flex-shrink:0}
+.tab{padding:7px 18px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--muted2);border:none;cursor:pointer;transition:all .15s;font-family:Helvetica,Arial,sans-serif}
+.tab.active{background:var(--bl);color:#fff}
+.tab:hover:not(.active){color:var(--text)}
+.page{display:none}
+.page.active{display:block}
+
+/* PAGE 1 */
 .pace-control{margin-bottom:28px}
 .pace-row{display:flex;align-items:baseline;gap:16px;margin-bottom:16px}
 .pace-value{font-size:68px;color:#fff;line-height:1;letter-spacing:-.02em}
@@ -39,52 +47,158 @@ input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;transform:scale(1
 .split-row.key .split-time{color:#fff}
 .split-row.race .split-dist{color:#999}
 .split-row.race .split-time{color:#fff;font-size:14px}
+
+/* PAGE 2 */
+.pred-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.ref-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-bottom:24px}
+.ref-btn{background:var(--surface);border:none;padding:16px 8px;text-align:center;cursor:pointer;transition:background .15s;font-family:Helvetica,Arial,sans-serif;color:#fff;font-size:15px}
+.ref-btn:hover{background:var(--bl)}
+.ref-btn.active{background:var(--bl)}
+.time-block{margin-bottom:24px}
+.time-fields{display:flex;align-items:center;gap:8px}
+input[type=number]{background:var(--surface);border:1px solid var(--bl);color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:28px;width:62px;text-align:center;padding:8px 4px;border-radius:3px;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+input[type=number]:focus{outline:none;border-color:#888}
+.time-sep{font-size:28px;color:var(--muted2)}
+.method-note{font-size:9px;color:var(--muted);letter-spacing:.08em;margin-bottom:20px}
+.pred-table{background:var(--surface);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.pred-thead{display:grid;grid-template-columns:1.2fr 1fr 1fr;background:var(--bg);border-bottom:1px solid var(--border)}
+.pred-th{padding:10px 20px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.pred-tr{display:grid;grid-template-columns:1.2fr 1fr 1fr;border-bottom:1px solid var(--border);transition:background .1s}
+.pred-tr:last-child{border-bottom:none}
+.pred-tr:hover{background:rgba(255,255,255,.03)}
+.pred-td{padding:11px 20px;font-size:13px;letter-spacing:.04em}
+.pred-td.dist{font-size:12px;color:var(--muted2)}
+.pred-td.time{color:var(--text)}
+.pred-td.pace{font-size:12px;color:var(--muted2)}
+.pred-tr.is-ref .pred-td.dist{color:#ccc}
+.pred-tr.is-ref .pred-td.time{color:#fff;font-size:14px}
+.pred-tr.is-ref .pred-td.pace{color:#999}
+
 @keyframes fn{0%{opacity:.3}100%{opacity:1}}
 .flash{animation:fn .2s ease}
-@media(max-width:560px){.splits-grid{grid-template-columns:1fr}.pace-value{font-size:52px}}
+
+/* Mobile: keep splits 2-col by reducing padding/font, not stacking */
+@media(max-width:600px){
+  .container{padding:24px 10px 40px}
+  .pace-value{font-size:52px}
+  .col-header{padding:8px 10px;font-size:8px;letter-spacing:.1em}
+  .split-row{padding:9px 10px}
+  .split-dist,.split-time{font-size:11px}
+  .split-row.race .split-time{font-size:12px}
+  .ref-grid{grid-template-columns:repeat(2,1fr)}
+  .pred-thead,.pred-tr{grid-template-columns:1fr 1fr 1fr}
+  .pred-th{padding:8px 8px;font-size:8px;letter-spacing:.08em}
+  .pred-td{padding:9px 8px;font-size:11px}
+  .pred-td.dist,.pred-td.pace{font-size:10px}
+  header{flex-direction:column;align-items:flex-start;gap:12px}
+  input[type=number]{font-size:22px;width:52px;padding:6px 2px}
+  .time-sep{font-size:22px}
+}
 </style>
 </head>
 <body>
 <div class="container">
   <header>
     <div class="brand">Pace Me <em>/ Built by Tom N.</em></div>
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('splits')">Splits</button>
+      <button class="tab" onclick="showTab('predict')">Predict</button>
+    </div>
   </header>
-  <div class="pace-control">
-    <div class="pace-row">
-      <div class="pace-value" id="pd">4:00</div>
-      <div class="pace-meta">
-        <div class="pace-unit">Min / Km</div>
-        <div class="pace-speed" id="ps">15.0 km/h</div>
+
+  <!-- PAGE 1 -->
+  <div id="page-splits" class="page active">
+    <div class="pace-control">
+      <div class="pace-row">
+        <div class="pace-value" id="pd">4:00</div>
+        <div class="pace-meta">
+          <div class="pace-unit">Min / Km</div>
+          <div class="pace-speed" id="ps">15.0 km/h</div>
+        </div>
+      </div>
+      <div class="slider-row">
+        <button class="btn" id="bm">&#8722;</button>
+        <div class="slider-wrap">
+          <input type="range" id="sl" min="150" max="330" value="240" step="1">
+          <div class="range-labels"><span>2:30 /km</span><span>5:30 /km</span></div>
+        </div>
+        <button class="btn" id="bp">&#43;</button>
       </div>
     </div>
-    <div class="slider-row">
-      <button class="btn" id="bm">&#8722;</button>
-      <div class="slider-wrap">
-        <input type="range" id="sl" min="150" max="330" value="240" step="1">
-        <div class="range-labels"><span>2:30 /km</span><span>5:30 /km</span></div>
+    <div class="splits-grid">
+      <div class="splits-col">
+        <div class="col-header"><span>Distance</span><span>Split</span></div>
+        <div id="cL"></div>
       </div>
-      <button class="btn" id="bp">&#43;</button>
+      <div class="splits-col">
+        <div class="col-header"><span>Distance</span><span>Split</span></div>
+        <div id="cR"></div>
+      </div>
     </div>
   </div>
-  <div class="splits-grid">
-    <div class="splits-col">
-      <div class="col-header"><span>Distance</span><span>Split</span></div>
-      <div id="cL"></div>
+
+  <!-- PAGE 2 -->
+  <div id="page-predict" class="page">
+    <div class="pred-label">Reference distance</div>
+    <div class="ref-grid">
+      <button class="ref-btn active" id="rb-5"    onclick="setRef('5')">5 km</button>
+      <button class="ref-btn"        id="rb-10"   onclick="setRef('10')">10 km</button>
+      <button class="ref-btn"        id="rb-half" onclick="setRef('half')">1/2 Marathon</button>
+      <button class="ref-btn"        id="rb-full" onclick="setRef('full')">Marathon</button>
     </div>
-    <div class="splits-col">
-      <div class="col-header"><span>Distance</span><span>Split</span></div>
-      <div id="cR"></div>
+    <div class="pred-label">Your reference time</div>
+    <div class="time-block">
+      <div class="time-fields">
+        <input type="number" id="inp-h" min="0" max="9"  value="0"  oninput="calcPredict()">
+        <span class="time-sep">h</span>
+        <input type="number" id="inp-m" min="0" max="59" value="25" oninput="calcPredict()">
+        <span class="time-sep">m</span>
+        <input type="number" id="inp-s" min="0" max="59" value="0"  oninput="calcPredict()">
+        <span class="time-sep">s</span>
+      </div>
+    </div>
+    <div class="method-note">Predictions based on Jack Daniels vDot method</div>
+    <div class="pred-table">
+      <div class="pred-thead">
+        <div class="pred-th">Distance</div>
+        <div class="pred-th">Estimated Time</div>
+        <div class="pred-th">Min / Km</div>
+      </div>
+      <div id="pred-body"></div>
     </div>
   </div>
+
 </div>
 <script>
-var L=[
+function ft(s){
+  s=Math.round(s);
+  var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60;
+  if(h>0) return h+'h'+String(m).padStart(2,'0')+"'"+String(sc).padStart(2,'0')+'"';
+  return m+"'"+String(sc).padStart(2,'0')+'"';
+}
+function fp(s){
+  var m=Math.floor(s/60),sc=Math.round(s%60);
+  if(sc===60){m++;sc=0;}
+  return m+':'+String(sc).padStart(2,'0');
+}
+function showTab(name){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.classList.remove('active');
+    if(t.getAttribute('onclick').indexOf(name)>-1) t.classList.add('active');
+  });
+  document.getElementById('page-'+name).classList.add('active');
+}
+
+/* PAGE 1 */
+var LD=[
   {l:'100m',m:100},{l:'200m',m:200},{l:'300m',m:300},
   {l:'400m',m:400,c:'key'},{l:'500m',m:500},{l:'600m',m:600},
   {l:'800m',m:800,c:'key'},{l:'1200m',m:1200},{l:'1400m',m:1400},
   {l:'1600m',m:1600,c:'key'}
 ];
-var R=[
+var RD=[
   {l:'2km',m:2000},{l:'3km',m:3000},{l:'4km',m:4000},
   {l:'5km',m:5000,c:'key'},{l:'10km',m:10000,c:'race'},
   {l:'1/2 Marathon',m:21097.5,c:'race'},{l:'Marathon',m:42195,c:'race'}
@@ -92,55 +206,88 @@ var R=[
 var sl=document.getElementById('sl');
 var pd=document.getElementById('pd');
 var ps=document.getElementById('ps');
-var cL=document.getElementById('cL');
-var cR=document.getElementById('cR');
-
-function ft(s){
-  s=Math.round(s);
-  var h=Math.floor(s/3600);
-  var m=Math.floor((s%3600)/60);
-  var sc=s%60;
-  var ms=String(m).padStart(2,'0');
-  var ss=String(sc).padStart(2,'0');
-  if(h>0) return h+'h'+ms+"'"+ss+'"';
-  return m+"'"+ss+'"';
-}
-function fp(s){
-  var m=Math.floor(s/60);
-  var sc=s%60;
-  return m+':'+String(sc).padStart(2,'0');
-}
 function bc(el,dists,pace){
   el.innerHTML=dists.map(function(d){
-    var t=ft((pace/1000)*d.m);
     var c=d.c||'';
-    return '<div class="split-row '+c+'"><span class="split-dist">'+d.l+'</span><span class="split-time">'+t+'</span></div>';
+    return '<div class="split-row '+c+'"><span class="split-dist">'+d.l+'</span><span class="split-time">'+ft((pace/1000)*d.m)+'</span></div>';
   }).join('');
 }
 function upd(){
   var s=parseInt(sl.value);
-  var pct=((s-150)/(330-150))*100;
-  sl.style.setProperty('--pct',pct+'%');
+  sl.style.setProperty('--pct',((s-150)/180*100)+'%');
   pd.textContent=fp(s);
-  pd.classList.remove('flash');
-  void pd.offsetWidth;
-  pd.classList.add('flash');
+  pd.classList.remove('flash');void pd.offsetWidth;pd.classList.add('flash');
   ps.textContent=(3600/s).toFixed(1)+' km/h';
-  bc(cL,L,s);
-  bc(cR,R,s);
+  bc(document.getElementById('cL'),LD,s);
+  bc(document.getElementById('cR'),RD,s);
 }
 sl.addEventListener('input',upd);
-document.getElementById('bm').addEventListener('click',function(){
-  if(+sl.value>+sl.min){sl.value=+sl.value-1;upd();}
-});
-document.getElementById('bp').addEventListener('click',function(){
-  if(+sl.value<+sl.max){sl.value=+sl.value+1;upd();}
-});
+document.getElementById('bm').addEventListener('click',function(){if(+sl.value>+sl.min){sl.value=+sl.value-1;upd();}});
+document.getElementById('bp').addEventListener('click',function(){if(+sl.value<+sl.max){sl.value=+sl.value+1;upd();}});
 document.addEventListener('keydown',function(e){
   if(e.key==='ArrowLeft'||e.key==='ArrowDown'){if(+sl.value>+sl.min){sl.value=+sl.value-1;upd();}}
   if(e.key==='ArrowRight'||e.key==='ArrowUp'){if(+sl.value<+sl.max){sl.value=+sl.value+1;upd();}}
 });
 upd();
+
+/* PAGE 2 - vDot (Jack Daniels) */
+function vo2(v){ return -4.60+0.182258*v+0.000104*v*v; }
+function frac(t){ return 0.8+0.1894393*Math.exp(-0.012778*t)+0.2989558*Math.exp(-0.1932605*t); }
+function getVdot(distM,timeSec){
+  var t=timeSec/60,v=distM/t;
+  return vo2(v)/frac(t);
+}
+function predictSec(vdot,distM){
+  var lo=0.5,hi=600.0;
+  for(var i=0;i<80;i++){
+    var mid=(lo+hi)/2,v=distM/mid;
+    if(vo2(v)/frac(mid)>vdot) lo=mid; else hi=mid;
+  }
+  return Math.round((lo+hi)/2*60);
+}
+var REFS={'5':{m:5000},'10':{m:10000},'half':{m:21097.5},'full':{m:42195}};
+var PREDS=[
+  {l:'1500m',       m:1500,    key:''},
+  {l:'3000m',       m:3000,    key:''},
+  {l:'5 km',        m:5000,    key:'5'},
+  {l:'10 km',       m:10000,   key:'10'},
+  {l:'15 km',       m:15000,   key:''},
+  {l:'20 km',       m:20000,   key:''},
+  {l:'1/2 Marathon',m:21097.5, key:'half'},
+  {l:'25 km',       m:25000,   key:''},
+  {l:'30 km',       m:30000,   key:''},
+  {l:'Marathon',    m:42195,   key:'full'}
+];
+var curRef='5';
+function setRef(k){
+  curRef=k;
+  ['5','10','half','full'].forEach(function(id){
+    document.getElementById('rb-'+id).classList.toggle('active',id===k);
+  });
+  calcPredict();
+}
+function calcPredict(){
+  var h=parseInt(document.getElementById('inp-h').value)||0;
+  var m=parseInt(document.getElementById('inp-m').value)||0;
+  var s=parseInt(document.getElementById('inp-s').value)||0;
+  var refSec=h*3600+m*60+s;
+  var body=document.getElementById('pred-body');
+  if(refSec<10){body.innerHTML='';return;}
+  var vd=getVdot(REFS[curRef].m,refSec);
+  var html='';
+  PREDS.forEach(function(d){
+    var predSec=predictSec(vd,d.m);
+    var paceSec=predSec/(d.m/1000);
+    var cls=d.key===curRef?'pred-tr is-ref':'pred-tr';
+    html+='<div class="'+cls+'">'+
+      '<div class="pred-td dist">'+d.l+'</div>'+
+      '<div class="pred-td time">'+ft(predSec)+'</div>'+
+      '<div class="pred-td pace">'+fp(paceSec)+'</div>'+
+    '</div>';
+  });
+  body.innerHTML=html;
+}
+calcPredict();
 </script>
 </body>
 </html>
