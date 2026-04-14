@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pace Me</title>
+<title>Pace Me App</title>
 <style>
 :root{--bg:#1a1a1a;--surface:#222;--border:#2e2e2e;--bl:#383838;--text:#f0f0f0;--muted:#555;--muted2:#888}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -179,8 +179,8 @@ input[type=number]:focus{outline:none;border-color:#888}
       <div class="pace-row">
         <div class="pace-value" id="pd">4:00</div>
         <div class="pace-meta">
-          <div class="pace-unit">Min / Km</div>
-          <div class="pace-speed" id="ps">15.0 km/h</div>
+          <div class="pace-unit">min/km</div>
+          <div class="pace-speed" id="ps">15.0km/h</div>
         </div>
       </div>
       <div class="slider-row">
@@ -203,7 +203,7 @@ input[type=number]:focus{outline:none;border-color:#888}
       </div>
     </div>
     <div class="custom-dist-block">
-      <label>Distance personnalisée</label>
+      <label>Custom</label>
       <input type="text" class="custom-dist-input" id="custom-km" placeholder="12.5" oninput="updCustom()">
       <span class="custom-dist-unit">km</span>
       <div class="custom-dist-result" id="custom-result">—</div>
@@ -214,8 +214,8 @@ input[type=number]:focus{outline:none;border-color:#888}
   <div id="page-predict" class="page">
     <div class="pred-label">Reference distance</div>
     <div class="ref-grid">
-      <button class="ref-btn active" id="rb-5" onclick="setRef('5')">5 km</button>
-      <button class="ref-btn" id="rb-10" onclick="setRef('10')">10 km</button>
+      <button class="ref-btn active" id="rb-5" onclick="setRef('5')">5km</button>
+      <button class="ref-btn" id="rb-10" onclick="setRef('10')">10km</button>
       <button class="ref-btn" id="rb-half" onclick="setRef('half')">1/2 Marathon</button>
       <button class="ref-btn" id="rb-full" onclick="setRef('full')">Marathon</button>
     </div>
@@ -235,7 +235,7 @@ input[type=number]:focus{outline:none;border-color:#888}
       <div class="pred-thead">
         <div class="pred-th">Distance</div>
         <div class="pred-th">Estimated Time</div>
-        <div class="pred-th">Min / Km</div>
+        <div class="pred-th">min/km</div>
       </div>
       <div id="pred-body"></div>
     </div>
@@ -246,15 +246,15 @@ input[type=number]:focus{outline:none;border-color:#888}
     <div class="workout-summary">
       <div class="summary-item">
         <div class="summary-val" id="ws-time">0'00"</div>
-        <div class="summary-lbl">Temps total</div>
+        <div class="summary-lbl">Time</div>
       </div>
       <div class="summary-item">
-        <div class="summary-val" id="ws-dist">0.0 km</div>
+        <div class="summary-val" id="ws-dist">0.0km</div>
         <div class="summary-lbl">Distance</div>
       </div>
       <div class="summary-item">
         <div class="summary-val" id="ws-pace">—</div>
-        <div class="summary-lbl">Allure moy.</div>
+        <div class="summary-lbl">Average pace</div>
       </div>
     </div>
 
@@ -272,7 +272,7 @@ input[type=number]:focus{outline:none;border-color:#888}
     </div>
 
     <div class="blocks-control">
-      <button class="add-block-btn" onclick="addBlock()">+ Ajouter un bloc</button>
+      <button class="add-block-btn" onclick="addBlock()">+ Add a bloc</button>
     </div>
 
     <div class="workout-blocks" id="wb-container"></div>
@@ -309,12 +309,12 @@ var LD=[
   {l:'1500m',m:1500,c:'key'},{l:'1600m',m:1600,c:'key'},{l:'1800m',m:1800}
 ];
 var RD=[
-  {l:'2 km',m:2000},{l:'3 km',m:3000},{l:'4 km',m:4000},
-  {l:'5 km',m:5000,c:'key'},{l:'10 km',m:10000,c:'race'},
-  {l:'15 km',m:15000,c:'race'},{l:'20 km',m:20000,c:'race'},
-  {l:'1/2 Marathon',m:21097.5,c:'race'},{l:'25 km',m:25000,c:'race'},
-  {l:'30 km',m:30000,c:'race'},{l:'35 km',m:35000,c:'race'},
-  {l:'40 km',m:40000,c:'race'},{l:'Marathon',m:42195,c:'race'}
+  {l:'2km',m:2000},{l:'3km',m:3000},{l:'4km',m:4000},
+  {l:'5km',m:5000,c:'key'},{l:'10km',m:10000,c:'race'},
+  {l:'15km',m:15000,c:'race'},{l:'20km',m:20000,c:'race'},
+  {l:'1/2 Marathon',m:21097.5,c:'race'},{l:'25km',m:25000,c:'race'},
+  {l:'30km',m:30000,c:'race'},{l:'35km',m:35000,c:'race'},
+  {l:'40km',m:40000,c:'race'},{l:'Marathon',m:42195,c:'race'}
 ];
 var sl=document.getElementById('sl'),pd=document.getElementById('pd'),ps=document.getElementById('ps');
 function bc(el,dists,pace){
@@ -326,7 +326,7 @@ function upd(){
   var s=parseInt(sl.value);
   sl.style.setProperty('--pct',((s-150)/(360-150)*100)+'%');
   pd.textContent=fp(s);pd.classList.remove('flash');void pd.offsetWidth;pd.classList.add('flash');
-  ps.textContent=(3600/s).toFixed(1)+' km/h';
+  ps.textContent=(3600/s).toFixed(1)+'km/h';
   bc(document.getElementById('cL'),LD,s);bc(document.getElementById('cR'),RD,s);
   updCustom();
 }
@@ -352,7 +352,7 @@ function frac(t){return 0.8+0.1894393*Math.exp(-0.012778*t)+0.2989558*Math.exp(-
 function getVdot(dM,tS){var t=tS/60,v=dM/t;return vo2(v)/frac(t);}
 function predictSec(vd,dM){var lo=0.5,hi=600;for(var i=0;i<80;i++){var mid=(lo+hi)/2,v=dM/mid;if(vo2(v)/frac(mid)>vd)lo=mid;else hi=mid;}return Math.round((lo+hi)/2*60);}
 var REFS={'5':{m:5000},'10':{m:10000},'half':{m:21097.5},'full':{m:42195}};
-var PREDS=[{l:'1500m',m:1500},{l:'3000m',m:3000},{l:'5 km',m:5000},{l:'10 km',m:10000},{l:'15 km',m:15000},{l:'20 km',m:20000},{l:'1/2 Marathon',m:21097.5},{l:'25 km',m:25000},{l:'30 km',m:30000},{l:'Marathon',m:42195}];
+var PREDS=[{l:'1500m',m:1500},{l:'3000m',m:3000},{l:'5km',m:5000},{l:'10km',m:10000},{l:'15km',m:15000},{l:'20km',m:20000},{l:'1/2 Marathon',m:21097.5},{l:'25km',m:25000},{l:'30km',m:30000},{l:'Marathon',m:42195}];
 var curRef='5';
 function setRef(k){curRef=k;['5','10','half','full'].forEach(function(id){document.getElementById('rb-'+id).classList.toggle('active',id===k);});calcPredict();}
 function calcPredict(){
@@ -480,7 +480,7 @@ function calcWorkout(){
       sec=dm*60+ds;
       if(sec>0&&paceTotal>0){
         dist=sec/paceTotal;
-        if(el)el.textContent=dist.toFixed(2)+' km';
+        if(el)el.textContent=dist.toFixed(2)+'km';
       }else{if(el)el.textContent='—';}
     }
     if(sec>0&&dist>0){
@@ -490,7 +490,7 @@ function calcWorkout(){
   });
 
   document.getElementById('ws-time').textContent=totalSec>0?ft(totalSec):"0'00\"";
-  document.getElementById('ws-dist').textContent=totalDist>0?totalDist.toFixed(1)+' km':'0.0 km';
+  document.getElementById('ws-dist').textContent=totalDist>0?totalDist.toFixed(1)+'km':'0.0km';
   document.getElementById('ws-pace').textContent=(totalDist>0&&totalSec>0)?fp(totalSec/totalDist)+' /km':'—';
 
   window._computedBlocks=computed;
